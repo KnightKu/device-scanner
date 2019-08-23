@@ -208,8 +208,6 @@ Vagrant.configure('2') do |config|
       cargo package --no-verify --allow-dirty
       cd /vagrant/device-scanner-zedlets
       cargo package --no-verify --allow-dirty
-      cd /vagrant/device-scanner-proxy
-      cargo package --no-verify --allow-dirty
       cd /vagrant/futures-failure
       cargo package --no-verify --allow-dirty
       cd /vagrant/zed-enhancer
@@ -231,9 +229,7 @@ Vagrant.configure('2') do |config|
       ssh root@device-aggregator.local systemctl enable --now device-aggregator.service nginx
 
       scp /tmp/_topdir/RPMS/x86_64/iml-device-scanner-[0-9]*.rpm root@device-scanner1.local:/tmp
-      scp /tmp/_topdir/RPMS/x86_64/iml-device-scanner-proxy-[0-9]*.rpm root@device-scanner1.local:/tmp
       scp /tmp/_topdir/RPMS/x86_64/iml-device-scanner-[0-9]*.rpm root@device-scanner2.local:/tmp
-      scp /tmp/_topdir/RPMS/x86_64/iml-device-scanner-proxy-[0-9]*.rpm root@device-scanner2.local:/tmp
       pdsh -w device-scanner[1-2].local 'yum install -y /tmp/*.rpm' | dshbak
       pdsh -w device-scanner[1-2].local systemctl enable --now device-scanner.target | dshbak
     SHELL

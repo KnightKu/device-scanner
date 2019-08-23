@@ -21,15 +21,6 @@ Requires: socat
 device-scanner-daemon builds an in-memory representation of
 devices using udev, zed and findmnt.
 
-%package proxy
-Summary:    Forwards device-scanner updates to device-aggregator
-License:    MIT
-Group:      System Environment/Libraries
-Requires:   %{name} = %{version}-%{release}
-%description proxy
-scanner-proxy-daemon forwards device-scanner updates received
-
-
 %package aggregator
 Summary:    Assembles global device view from multiple device scanner instances.
 License:    MIT
@@ -54,10 +45,6 @@ cp device-scanner.{target,socket,service} %{buildroot}%{_unitdir}
 cp block-device-populator.service %{buildroot}%{_unitdir}
 cp 00-device-scanner.preset %{buildroot}%{_presetdir}
 cp device-scanner-daemon %{buildroot}%{_bindir}
-
-cp scanner-proxy.{service,path} %{buildroot}%{_unitdir}
-cp 00-scanner-proxy.preset %{buildroot}%{_presetdir}
-cp device-scanner-proxy %{buildroot}%{_bindir}
 
 cp device-aggregator.service %{buildroot}%{_unitdir}
 cp 00-device-aggregator.preset %{buildroot}%{_presetdir}
@@ -117,13 +104,6 @@ cp 99-iml-zed-enhancer.rules %{buildroot}%{_sysconfdir}/udev/rules.d
 %attr(0755,root,root)%{_libexecdir}/zfs/zed.d/*
 %{_sysconfdir}/zfs/zed.d/*
 
-
-%files proxy
-%attr(0644,root,root)%{_unitdir}/scanner-proxy.service
-%attr(0644,root,root)%{_unitdir}/scanner-proxy.path
-%attr(0644,root,root)%{_presetdir}/00-scanner-proxy.preset
-%attr(0755,root,root)%{_bindir}/device-scanner-proxy
-
 %files aggregator
 %attr(0644,root,root)%{_unitdir}/device-aggregator.service
 %attr(0644,root,root)%{_presetdir}/00-device-aggregator.preset
@@ -138,8 +118,6 @@ systemctl preset zed-populator.service
 systemctl preset zed-enhancer.socket
 systemctl preset zed-enhancer.service
 
-%post proxy
-systemctl preset scanner-proxy.path
 
 %post aggregator
 systemctl preset device-aggregator.service
@@ -157,21 +135,12 @@ systemctl preset device-aggregator.service
 %systemd_preun zed-enhancer.socket
 %systemd_preun zed-enhancer.service
 
-
-%preun proxy
-%systemd_preun scanner-proxy.path
-%systemd_preun scanner-proxy.service
-
-
 %preun aggregator
 %systemd_preun device-aggregator.service
 
 %postun
 %systemd_postun device-scanner.socket
 %systemd_postun zed-enhancer.socket
-
-%postun proxy
-%systemd_postun scanner-proxy.path
 
 %postun aggregator
 %systemd_postun device-aggregator.service
